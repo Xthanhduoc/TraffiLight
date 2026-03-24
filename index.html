@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sa Bàn Giao Thông Thông Minh</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* CSS: Giao diện tươi sáng, thân thiện với trẻ em */
+        :root {
+            --primary-color: #FF9800; /* Cam năng động */
+            --secondary-color: #4CAF50; /* Xanh lá an toàn */
+            --accent-color: #2196F3; /* Xanh dương bầu trời */
+            --bg-color: #E0F7FA; /* Nền xanh nhạt tươi sáng */
+            --text-color: #333;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Header & Điều hướng */
+        header {
+            background-color: white;
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 5px solid var(--primary-color);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 900;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--accent-color);
+            font-weight: 700;
+            margin-left: 20px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+
+        nav a:hover {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        /* Hero Section - Phần đầu trang thu hút */
+        .hero {
+            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+            padding: 80px 5%;
+            text-align: center;
+            border-bottom-left-radius: 50% 20px;
+            border-bottom-right-radius: 50% 20px;
+            box-shadow: 0px 10px 20px rgba(0,0,0,0.05);
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            color: #1976D2;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(255,255,255,0.8);
+        }
+
+        .hero p {
+            font-size: 20px;
+            color: #555;
+            max-width: 800px;
+            margin: 0 auto 30px;
+        }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 30px;
+            font-size: 20px;
+            font-weight: 700;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0px 5px 0px #e65100; /* Nút bấm dạng 3D */
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+
+        .btn:active {
+            transform: translateY(5px);
+            box-shadow: 0px 0px 0px #e65100;
+        }
+
+        /* Mục Giới thiệu */
+        .about {
+            padding: 60px 5%;
+            text-align: center;
+            background-color: #FFF3E0; /* Cam nhạt ấm áp */
+        }
+
+        .about h2 {
+            font-size: 36px;
+            color: #E65100;
+            margin-bottom: 20px;
+        }
+
+        .about p {
+            font-size: 18px;
+            max-width: 800px;
+            margin: 0 auto 15px;
+            color: #444;
+        }
+
+        /* Phần mô tả tính năng nổi bật (Dạng thẻ Grid) */
+        .features {
+            padding: 60px 5%;
+            text-align: center;
+        }
+
+        .features h2 {
+            font-size: 36px;
+            color: var(--secondary-color);
+            margin-bottom: 40px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0px 8px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            border-top: 5px solid var(--accent-color);
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+        }
+
+        .card-icon {
+            font-size: 50px;
+            margin-bottom: 15px;
+        }
+
+        .card h3 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        /* Bảng danh sách sản phẩm */
+        .inventory {
+            padding: 60px 5%;
+            background-color: #fff9c4; /* Vàng rực rỡ vui tươi */
+            border-top-left-radius: 50% 20px;
+            border-top-right-radius: 50% 20px;
+        }
+
+        .inventory h2 {
+            text-align: center;
+            font-size: 36px;
+            color: #f57f17;
+            margin-bottom: 40px;
+        }
+
+        table {
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0px 5px 15px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background-color: var(--secondary-color);
+            color: white;
+            font-size: 18px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f1f8e9;
+        }
+
+        tr:hover {
+            background-color: #e8f5e9;
+        }
+
+        /* Mục Liên hệ đặt hàng */
+        .contact {
+            padding: 60px 5%;
+            background-color: white;
+            text-align: center;
+            border-top: 5px dashed var(--accent-color);
+        }
+
+        .contact h2 {
+            font-size: 36px;
+            color: var(--accent-color);
+            margin-bottom: 40px;
+        }
+
+        .contact-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 40px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .contact-info {
+            flex: 1;
+            min-width: 300px;
+            text-align: left;
+            background: var(--bg-color);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0px 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .contact-info p {
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        .contact-form {
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .contact-form input, .contact-form textarea {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            font-family: 'Nunito', sans-serif;
+            border: 2px solid #ddd;
+            border-radius: 15px;
+            outline: none;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+
+        .contact-form input:focus, .contact-form textarea:focus {
+            border-color: var(--primary-color);
+        }
+
+        .btn-submit {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 15px;
+            font-size: 20px;
+            font-weight: 700;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            box-shadow: 0px 5px 0px #388E3C;
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+
+        .btn-submit:active {
+            transform: translateY(5px);
+            box-shadow: 0px 0px 0px #388E3C;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            font-size: 14px;
+        }
+
+        /* Media Query cho Mobile */
+        @media (max-width: 768px) {
+            nav { display: none; } /* Giấu menu trên điện thoại cho đơn giản */
+            .hero h1 { font-size: 36px; }
+            table { font-size: 14px; }
+            .contact-container { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">🚦 Giao Thông Nhí</div>
+        <nav>
+            <a href="#hero">Trang chủ</a>
+            <a href="#about">Giới thiệu</a>
+            <a href="#features">Tính năng nổi bật</a>
+            <a href="#inventory">Hộp có gì?</a>
+            <a href="#contact">Liên hệ</a>
+        </nav>
+    </header>
+
+    <section class="hero" id="hero">
+        <h1>Khám Phá Bộ Sa Bàn Giao Thông Thông Minh</h1>
+        <p>Học luật giao thông chưa bao giờ thú vị đến thế! Kích thước nhỏ gọn 420x420mm, làm từ nhựa ABS an toàn tuyệt đối, với đèn tín hiệu đếm ngược thật y như ngoài đường. Điều khiển dễ dàng ngay trên chiếc điện thoại của bạn!</p>
+        <button class="btn" onclick="sayHello()">Tìm Hiểu Ngay 🚗</button>
+    </section>
+
+    <section class="about" id="about">
+        <h2>👋 Về Chúng Tôi</h2>
+        <p>Thấu hiểu tầm quan trọng của việc giáo dục an toàn giao thông từ sớm, <strong>Công Ty TNHH Liên Hiệp Bắc Nam</strong> đã nghiên cứu và phát triển <strong>Bộ Sa Bàn Giao Thông Thông Minh</strong>.</p>
+        <p>Với tiêu chí "Học mà chơi - Chơi mà học", chúng tôi mong muốn mang đến một giải pháp trực quan, sinh động nhất giúp các em học sinh tiểu học dễ dàng tiếp thu kiến thức giao thông thực tế. Sản phẩm không chỉ là một công cụ giảng dạy trên lớp cho thầy cô, mà còn là một bộ đồ chơi giáo dục tuyệt vời để ba mẹ đồng hành cùng con tại nhà.</p>
+    </section>
+
+    <section class="features" id="features">
+        <h2>Những Điều Kỳ Diệu Của Bộ Sa Bàn ✨</h2>
+        <div class="grid">
+            <div class="card">
+                <div class="card-icon">📱</div>
+                <h3>Điều Khiển Thông Minh</h3>
+                <p>Cài đặt thời gian đèn đường xanh, đỏ, vàng ngay trên Smartphone của bạn bằng App điều khiển chuyên dụng.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">⏱️</div>
+                <h3>Đồng Hồ Đếm Ngược Thật</h3>
+                <p>Các đèn tín hiệu hoạt động đếm ngược như thực tế! Có cả chế độ ban đêm (đèn vàng nhấp nháy 0h-5h) và chế độ ưu tiên cho xe cứu hỏa, cứu thương.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">🏫</div>
+                <h3>Bài Học Kỹ Năng Sống</h3>
+                <p>Làm quen biển báo, cách qua đường an toàn và đi xe buýt. Có sách hướng dẫn kèm video sinh động.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">🧩</div>
+                <h3>Phát Triển Sáng Tạo</h3>
+                <p>Tự tay lắp ghép các chi tiết, sa hình linh hoạt thay đổi theo từng bài học, kích thích tư duy thiết kế của trẻ.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="inventory" id="inventory">
+        <h2>📦 Mở Hộp Xem Bên Trong Có Gì Nào?</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>Tên sản phẩm</th>
+                    <th>Số lượng</th>
+                    <th>Đơn vị tính</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><b>A</b></td>
+                    <td><b>Hộp sa bàn giao thông (420x420 mm)</b></td>
+                    <td>1</td>
+                    <td>Bộ</td>
+                </tr>
+                <tr>
+                    <td><b>B</b></td>
+                    <td colspan="3"><b>Phụ kiện:</b></td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>Đèn tín hiệu giao thông (3 đèn + đồng hồ đếm ngược)</td>
+                    <td>4</td>
+                    <td>Cái</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Đèn đường</td>
+                    <td>4</td>
+                    <td>Cái</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>Biển báo cấm (Cấm rẽ, cấm quay đầu, cấm dừng đỗ...)</td>
+                    <td>4</td>
+                    <td>Cái</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>Biển hiệu lệnh & Chỉ dẫn (Cầu vượt, lối đi bộ, biển tên đường...)</td>
+                    <td>9</td>
+                    <td>Cái</td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td>Dải phân cách, vòng xuyến</td>
+                    <td>3</td>
+                    <td>Cái</td>
+                </tr>
+                <tr>
+                    <td>6</td>
+                    <td>Mô hình xe (Xe khách, xe đạp, xe máy)</td>
+                    <td>10</td>
+                    <td>Xe</td>
+                </tr>
+                <tr>
+                    <td>7</td>
+                    <td>Mô hình người đi bộ & cây xanh</td>
+                    <td>8</td>
+                    <td>Cái</td>
+                </tr>
+                <tr>
+                    <td>8</td>
+                    <td>Sách Kỹ năng tham gia giao thông & Hướng dẫn sử dụng</td>
+                    <td>2</td>
+                    <td>Quyển</td>
+                </tr>
+                <tr>
+                    <td>9</td>
+                    <td>Sa hình đi kèm</td>
+                    <td>2</td>
+                    <td>Bộ</td>
+                </tr>
+                <tr>
+                    <td>10</td>
+                    <td>Nguồn adapter 5V + Dây nguồn</td>
+                    <td>1</td>
+                    <td>Bộ</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="contact" id="contact">
+        <h2>📞 Liên Hệ & Đặt Hàng</h2>
+        <div class="contact-container">
+            <div class="contact-info">
+                <h3>Công Ty TNHH Liên Hiệp Bắc Nam</h3>
+                <p>📍 <b>Địa chỉ:</b> [Hẻm 11 Mậu Thân, Phường Xuân Khánh, Quận Ninh Kiều, TP. Cần Thơ]</p>
+                <p>☎️ <b>Hotline/Zalo:</b> 0823020701</p>
+                <p>✉️ <b>Email:</b> info@lienhiepbacnam.vn</p>
+                <p>🌐 <b>Website:</b> [//////]</p>
+                <p><i>Hãy liên hệ ngay với chúng tôi để nhận báo giá ưu đãi dành cho trường học và các bậc phụ huynh nhé!</i></p>
+            </div>
+            
+            <form class="contact-form" onsubmit="submitForm(event)">
+                <input type="text" placeholder="Họ và tên người đặt" required>
+                <input type="tel" placeholder="Số điện thoại liên hệ" required>
+                <input type="text" placeholder="Trường học / Địa chỉ giao hàng">
+                <textarea rows="4" placeholder="Lời nhắn hoặc yêu cầu thêm (Số lượng, màu sắc...)"></textarea>
+                <button type="submit" class="btn-submit">Gửi Yêu Cầu Đặt Hàng 🚀</button>
+            </form>
+        </div>
+    </section>
+
+    <footer>
+        <p>Bản quyền thuộc về Công Ty TNHH Liên Hiệp Bắc Nam</p>
+    </footer>
+
+    <script>
+        // Hiệu ứng cuộn mượt (Smooth Scroll) khi nhấn vào menu
+        document.querySelectorAll('nav a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                document.getElementById(targetId).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Hàm tương tác khi click nút tìm hiểu
+        function sayHello() {
+            alert("Bíp bíp! 🚦 Chào mừng bạn đến với thế giới Giao Thông Thông Minh. Hãy kéo xuống dưới để xem bên trong bộ sa bàn có gì nhé!");
+            document.getElementById('about').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Hàm mô phỏng việc bấm nút gửi form
+        function submitForm(event) {
+            event.preventDefault(); // Ngăn trang web bị tải lại
+            alert("Cảm ơn bạn! Thông tin đặt hàng đã được ghi nhận. Chúng tôi sẽ liên hệ lại với bạn trong thời gian sớm nhất nhé! 📞");
+            event.target.reset(); // Xóa trắng form sau khi gửi
+        }
+    </script>
+</body>
+</html>
