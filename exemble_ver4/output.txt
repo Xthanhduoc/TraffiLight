@@ -1,0 +1,3 @@
+I have added the `<uses-permission android:name="android.permission.INTERNET"/>` tag to your `android/app/src/main/AndroidManifest.xml` file. This was likely the cause of the MQTT connection issue on your physical phone, as release builds require explicit declaration of internet access.
+
+Please rebuild your `app-release.apk` and test it on your physical phone. The MQTT connection should now work as expected.
