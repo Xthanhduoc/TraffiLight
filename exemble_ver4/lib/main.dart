@@ -1,5 +1,4 @@
 // ignore_for_file: deprecated_member_use
-
 import 'dart:async';
 import 'dart:ui';
 import 'dart:convert';
@@ -241,6 +240,11 @@ class TrafficLogic extends ChangeNotifier {
         currentMode = "⚙️ Tùy chỉnh";
       }
     }
+  }
+
+  void restartTimersLocal() {
+    print("🔄 Restarting local timers to match Firmware...");
+    _delayedReset();
   }
 
   void _delayedReset() {
@@ -636,84 +640,44 @@ class TrafficLogic extends ChangeNotifier {
     if (!_isSyncedWithFirmware) return;
 
     try {
-      if (json.containsKey('states') && json.containsKey('counters')) {
-        List<dynamic> jsonStates = json['states'];
-        List<dynamic> jsonCounters = json['counters'];
-
-        if (jsonStates.length == 4 && jsonCounters.length == 4) {
-          states = List<String>.from(jsonStates);
-          counters = List<int>.from(
-            jsonCounters.map(
-                  (e) => e is int ? e : int.tryParse(e.toString()) ?? 0,
-            ),
-          );
+      // 1. Đọc mảng trạng thái từng đèn (lights array) từ ESP32
+      if (json.containsKey('lights')) {
+        List<dynamic> lightsList = json['lights'];
+        for (var light in lightsList) {
+          int id = light['id'];
+          if (id >= 0 && id < 4) {
+            // Firmware gửi "GREEN", "RED" -> App cần chuyển thành "green", "red"
+            states[id] = light['state'].toString().toLowerCase();
+            counters[id] = light['counter'];
+          }
         }
       }
 
-      if (json.containsKey('green_time')) {
-        greenTime = json['green_time'] is int
-            ? json['green_time']
-            : int.tryParse(json['green_time'].toString()) ?? greenTime;
-      }
-      if (json.containsKey('yellow_time')) {
-        yellowTime = json['yellow_time'] is int
-            ? json['yellow_time']
-            : int.tryParse(json['yellow_time'].toString()) ?? yellowTime;
-      }
-      if (json.containsKey('red_time')) {
-        redTime = json['red_time'] is int
-            ? json['red_time']
-            : int.tryParse(json['red_time'].toString()) ?? redTime;
+      // 2. Đọc cấu hình thời gian (times object)
+      if (json.containsKey('times')) {
+        var times = json['times'];
+        if (times.containsKey('green')) greenTime = times['green'];
+        if (times.containsKey('yellow')) yellowTime = times['yellow'];
+        if (times.containsKey('red')) redTime = times['red'];
       }
 
-      if (json.containsKey('night_mode')) {
-        nightMode = json['night_mode'] == true || json['night_mode'] == 1;
-      }
-
-      if (json.containsKey('priority_mode')) {
-        priorityMode =
-            json['priority_mode'] == true || json['priority_mode'] == 1;
-      }
-
-      if (json.containsKey('priority_id')) {
-        priorityId = json['priority_id'] is int
-            ? json['priority_id']
-            : int.tryParse(json['priority_id'].toString()) ?? -1;
-      }
-
+      // 3. Đọc chế độ hoạt động (mode)
       if (json.containsKey('mode')) {
-        String mode = json['mode'];
-        if (nightMode) {
-          if (nightModeManual) {
-            currentMode = "🌙 Ban đêm (thủ công)";
-          } else {
-            currentMode = "🌙 Ban đêm";
-          }
-        } else if (priorityMode) {
-          currentMode = "🚑 Chế độ ưu tiên: ${getPriorityDirectionText(priorityId)}";
+        String modeStr = json['mode'];
+        if (modeStr == "NIGHT") {
+          nightMode = true;
+          priorityMode = false;
+        } else if (modeStr == "PRIORITY") {
+          priorityMode = true;
+          nightMode = false;
         } else {
-          switch (mode) {
-            case 'normal':
-              currentMode = "🚗 Bình thường";
-              break;
-            case 'peak':
-              currentMode = "🚙 Đông xe";
-              break;
-            case 'low':
-              currentMode = "🚲 Ít xe";
-              break;
-            case 'custom':
-              currentMode = "⚙️ Tùy chỉnh";
-              break;
-            default:
-              _updateModeFromTimes();
-          }
+          nightMode = false;
+          priorityMode = false;
         }
-      } else {
-        _updateModeFromTimes();
       }
 
-      print('✅ Cập nhật trạng thái từ firmware thành công');
+      _updateModeFromTimes();
+      // print('✅ Đã đồng bộ chính xác từng giây với Firmware');
       notifyListeners();
     } catch (e) {
       print('❌ Lỗi cập nhật từ JSON: $e');
@@ -846,7 +810,15 @@ class _TrafficHomeState extends State<TrafficHome>
     _logic.onShowMessage = _showSnackBar;
 
     _logic.onPublishCommand = (command) {
-      _mqttManager.publishCommand(command);
+      // CHỈ gửi lệnh lên MQTT Server nếu:
+      // 1. MQTT đang kết nối
+      // 2. Cờ firmwareConnected đang là true (sa bàn đang online)
+      // 3. Người dùng KHÔNG chủ động ngắt kết nối
+      if (_mqttConnected && _firmwareConnected && !_firmwareExplicitlyDisconnected) {
+        _mqttManager.publishCommand(command);
+      } else {
+        print('🔒 Chặn gửi lệnh [$command]: Đang chạy chế độ Local (Đã ngắt sa bàn)');
+      }
     };
 
     _mqttManager = MQTTManager();
@@ -1091,13 +1063,24 @@ class _TrafficHomeState extends State<TrafficHome>
                     _logic.setSyncedWithFirmware(false);
                     _showSnackBar("🔌 Đã ngắt kết nối phần cứng", Colors.orange);
                   } else {
-                    // XỬ LÝ KẾT NỐI: Tắt cờ chặn, gửi yêu cầu kết nối
+                    // XỬ LÝ KẾT NỐI VÀ ĐỒNG BỘ TỪ APP XUỐNG FIRMWARE
                     if (_mqttConnected) {
                       setState(() {
                         _firmwareExplicitlyDisconnected = false;
+                        _firmwareConnected = true; // Mở lại cờ kết nối ngay lập tức
+                        _lastFirmwareMessage = DateTime.now(); // Reset bộ đếm timeout để không bị văng ngay lập tức
                       });
-                      _mqttManager.publishCommand('STATUS');
-                      _showSnackBar("📡 Đang gửi yêu cầu kết nối...", Colors.blue);
+
+                      _logic.setSyncedWithFirmware(true);
+
+                      // Ép App dịch trạng thái/thời gian hiện tại thành lệnh (N, P, L, hoặc R..G..Y..)
+                      // và gửi thẳng xuống ESP32
+                      _syncCurrentStateToFirmware();
+
+                      // THÊM: Ép App tự reset mốc thời gian về 0 để khớp nhịp ESP32
+                      _logic.restartTimersLocal();
+
+                      _showSnackBar("📡 Đã kết nối và đồng bộ thời gian xuống sa bàn", Colors.green);
                     } else {
                       _showSnackBar("⚠️ Chưa kết nối được với hệ thống", Colors.red);
                     }
